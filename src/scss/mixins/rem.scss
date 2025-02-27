@@ -1,0 +1,10 @@
+$base-value: 16 !default;
+
+@function strip-unit($num) {
+  @return $num / ($num * 0 + 1);
+}
+
+@function rem($size) {
+  $remSize: $size / $base-value;
+  @return #{$remSize}rem;
+}

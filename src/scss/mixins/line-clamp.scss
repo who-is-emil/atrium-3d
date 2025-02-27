@@ -1,0 +1,15 @@
+@mixin line-clamp(
+	$font-size,
+	$line-height,
+	$lines-to-show
+) {
+	display: block;
+	display: -webkit-box;
+	font-size: rem($font-size);
+	max-height: rem($font-size * $line-height * $lines-to-show);
+	line-height: $line-height;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: $lines-to-show;
+}
