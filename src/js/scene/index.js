@@ -99,10 +99,12 @@ export default class Scene {
         this.loadingElement.style.display = "none";
       },
       (xhr) => {
-        const percentComplete = (xhr.loaded / xhr.total) * 100;
-        this.loadingElement.innerText = `Загрузка: ${Math.round(
-          percentComplete
-        )}%`;
+        if (xhr.total > 0) {
+          const percentComplete = (xhr.loaded / xhr.total) * 100;
+          this.loadingElement.innerText = `Загрузка: ${Math.min(100, Math.round(percentComplete))}%`;
+        } else {
+          this.loadingElement.innerText = "Загрузка...";
+        }
       },
       (error) => {
         this.loadingElement.innerText = "Ошибка загрузки!";
