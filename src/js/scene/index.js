@@ -6,6 +6,7 @@ import GUI from "lil-gui";
 export default class Scene {
   constructor(modelPath) {
     this.modelPath = modelPath;
+    this.loadingElement = document.querySelector(".loading");
 
     this.init();
   }
@@ -95,12 +96,16 @@ export default class Scene {
         });
 
         this.controls.update();
+        this.loadingElement.style.display = "none";
       },
       (xhr) => {
-        console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+        const percentComplete = (xhr.loaded / xhr.total) * 100;
+        this.loadingElement.innerText = `Загрузка: ${Math.round(
+          percentComplete
+        )}%`;
       },
       (error) => {
-        console.error("An error occurred while loading the model:", error);
+        this.loadingElement.innerText = "Ошибка загрузки!";
       }
     );
   }

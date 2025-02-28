@@ -1,4 +1,14 @@
-@import 'typography';
-@import 'scale-html';
-@import 'container';
-@import 'scene';
+@import "typography";
+@import "scale-html";
+@import "container";
+@import "scene";
+
+.loading {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: rem(40);
+  line-height: 1;
+}
