@@ -12,3 +12,10 @@
   font-size: rem(40);
   line-height: 1;
 }
+
+.toggle {
+  position: absolute;
+  z-index: 2;
+  top: rem(40);
+  left: rem(40);
+}

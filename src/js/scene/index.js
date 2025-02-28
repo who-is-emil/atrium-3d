@@ -46,6 +46,10 @@ export default class Scene {
     const ambientLight = new THREE.AmbientLight(0xaaaaaa, 1);
     this.scene.add(ambientLight);
 
+    // const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1);
+    // hemiLight.position.set(5, 10, 8);
+    // this.scene.add(hemiLight);
+
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
     directionalLight.position.set(5, 10, 7.5);
     directionalLight.castShadow = true;
@@ -59,15 +63,56 @@ export default class Scene {
       this.loadModel(this.modelPath);
     }
 
-    this.gui = new GUI();
-    this.colorSettings = {
-      color: "#ffffff",
-    };
-    this.gui
-      .addColor(this.colorSettings, "color")
-      .onChange(this.changeColor.bind(this));
+    // this.gui = new GUI();
+    // this.colorSettings = {
+    //   color: "#ffffff",
+    // };
+    // this.gui
+    //   .addColor(this.colorSettings, "color")
+    //   .onChange(this.changeColor.bind(this));
+
+    const toggle = document.querySelector("[data-toggle]");
+    if (toggle) {
+      toggle.addEventListener("click", () => {
+        this.toggleVisibility();
+      });
+    }
+
+    this.raycaster = new THREE.Raycaster();
+    this.mouse = new THREE.Vector2();
+
+    canvas.addEventListener("click", this.onClick.bind(this));
 
     requestAnimationFrame(this.render.bind(this));
+  }
+
+  onClick(event) {
+    // Нормализуем координаты клика
+    this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    // Обновляем луч Raycaster
+    this.raycaster.setFromCamera(this.mouse, this.camera);
+
+    // Рисуем луч и находим пересечения с объектами
+    const intersects = this.raycaster.intersectObjects(this.scene.children);
+
+    if (intersects.length > 0) {
+      const object = intersects[0].object;
+      if (object.name === "mesh_64") {
+        alert(`Вы кликнули на объект: ${object.name}`);
+      }
+    }
+  }
+
+  toggleVisibility() {
+    if (this.model) {
+      const targetMesh = this.model.getObjectByName("mesh_58");
+
+      if (targetMesh) {
+        targetMesh.visible = !targetMesh.visible;
+      }
+    }
   }
 
   loadModel(path) {
@@ -90,8 +135,34 @@ export default class Scene {
 
         this.model.traverse((node) => {
           if (node.isMesh) {
-            node.material.color = new THREE.Color(this.colorSettings.color);
-            node.material.needsUpdate = true;
+            console.log(node.name);
+            if (
+              node.name === "mesh_255" ||
+              node.name === "mesh_256" ||
+              node.name === "mesh_64" ||
+              node.name === "mesh_65" ||
+              node.name === "mesh_212"
+            ) {
+              const newMaterial = new THREE.MeshStandardMaterial({
+                color: 0xff0000,
+                roughness: 0.5, // или другие параметры
+              });
+
+              node.material = newMaterial; // Применяем новый материал
+              node.material.needsUpdate = true;
+            } else if (node.name === "mesh_58") {
+              const newMaterial = new THREE.MeshStandardMaterial({
+                color: 0x0000ff,
+                roughness: 0.5, // или другие параметры
+              });
+
+              node.material = newMaterial; // Применяем новый материал
+              node.material.needsUpdate = true;
+            } else {
+              // node.material.color = new THREE.Color(this.colorSettings.color);
+              // node.material.color = new THREE.Color("#ffffff");
+              // node.material.needsUpdate = true;
+            }
           }
         });
 
@@ -112,16 +183,16 @@ export default class Scene {
     );
   }
 
-  changeColor(value) {
-    if (this.model) {
-      this.model.traverse((node) => {
-        if (node.isMesh) {
-          node.material.color.set(value);
-          node.material.needsUpdate = true;
-        }
-      });
-    }
-  }
+  // changeColor(value) {
+  //   if (this.model) {
+  //     this.model.traverse((node) => {
+  //       if (node.isMesh) {
+  //         node.material.color.set(value);
+  //         node.material.needsUpdate = true;
+  //       }
+  //     });
+  //   }
+  // }
 
   resizeRendererToDisplaySize() {
     const canvas = this.renderer.domElement;
